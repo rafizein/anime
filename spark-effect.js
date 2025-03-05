@@ -1,60 +1,31 @@
-document.addEventListener("DOMContentLoaded", function () {
-    var canvas = document.createElement("canvas");
-    canvas.id = "sparkCanvas";
-    document.body.appendChild(canvas);
+document.addEventListener('DOMContentLoaded', () => {
+    const colors = ['#00FFFF', '#00FF00', '#FF00FF', '#FFFF00', '#FF0000', '#0000FF']; // Warna-warna listrik
+    const body = document.body;
 
-    var ctx = canvas.getContext("2d"),
-        particles = [];
+    document.addEventListener('mousemove', (e) => {
+        const spark = document.createElement('div');
+        spark.style.position = 'absolute';
+        spark.style.left = `${e.clientX}px`;
+        spark.style.top = `${e.clientY}px`;
+        spark.style.width = '10px';
+        spark.style.height = '10px';
+        spark.style.borderRadius = '50%';
+        spark.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        spark.style.boxShadow = `0 0 10px 5px ${colors[Math.floor(Math.random() * colors.length)]}`;
+        spark.style.pointerEvents = 'none';
+        spark.style.transition = 'all 0.3s ease-out';
 
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
+        body.appendChild(spark);
 
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+        // Animasi pergerakan dan menghilang
+        setTimeout(() => {
+            spark.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) scale(2)`;
+            spark.style.opacity = '0';
+        }, 10);
 
-    function Particle(x, y) {
-        this.x = x;
-        this.y = y;
-        this.radius = Math.random() * 3 + 1.5;
-        this.color = "rgba(" + (Math.floor(Math.random() * 100) + 200) + "," +
-            (Math.floor(Math.random() * 100) + 50) + ",0,";
-        this.alpha = 1;
-        this.speedX = (Math.random() - 0.5) * 2;
-        this.speedY = (Math.random() - 0.5) * 2 - 1.5;
-    }
-
-    Particle.prototype.update = function () {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.alpha -= 0.03;
-    };
-
-    Particle.prototype.draw = function () {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        ctx.fillStyle = this.color + this.alpha + ")";
-        ctx.fill();
-    };
-
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (var i = particles.length - 1; i >= 0; i--) {
-            particles[i].update();
-            particles[i].draw();
-            if (particles[i].alpha <= 0) {
-                particles.splice(i, 1);
-            }
-        }
-        requestAnimationFrame(animate);
-    }
-
-    animate();
-
-    window.addEventListener("mousemove", function (e) {
-        for (var i = 0; i < 5; i++) {
-            particles.push(new Particle(e.clientX, e.clientY));
-        }
+        // Hapus elemen setelah animasi selesai
+        setTimeout(() => {
+            spark.remove();
+        }, 300);
     });
 });
